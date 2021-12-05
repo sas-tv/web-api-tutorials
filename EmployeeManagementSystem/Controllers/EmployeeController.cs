@@ -1,9 +1,8 @@
-﻿using EmployeeManagementSystem.ApplicationServices;
+﻿using EmployeeManagementSystem.ApplicationServices.Interfaces;
 using EmployeeManagementSystem.Common.Entities.Dtos;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace EmployeeManagementSystem.Controllers
 {
@@ -11,8 +10,18 @@ namespace EmployeeManagementSystem.Controllers
     [ApiController]
     public class EmployeeController : ControllerBase
     {
-        private EmployeeService _EmployeeService = new EmployeeService();
+        #region Private Variables
+        private IEmployeeService _EmployeeService;
+        #endregion
 
+        #region Constructors
+        public EmployeeController(IEmployeeService employeeService)
+        {
+            _EmployeeService = employeeService;
+        }
+        #endregion
+
+        #region Public Methods
         [HttpGet, Route("{id:int}")]
         public Employee GetEmployeeById(int id)
         {
@@ -79,5 +88,6 @@ namespace EmployeeManagementSystem.Controllers
                 throw ex;
             }
         }
+        #endregion
     }
 }

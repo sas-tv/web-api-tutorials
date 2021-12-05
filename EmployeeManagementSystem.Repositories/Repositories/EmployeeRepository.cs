@@ -1,13 +1,14 @@
 ﻿using EmployeeManagementSystem.Common.Entities.Dtos;
+using EmployeeManagementSystem.Repositories.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace EmployeeManagementSystem.Repositories
 {
-    public class EmployeeRepository
+    public class EmployeeRepository : IEmployeeRepository
     {
+        #region Private Variables
         private List<Employee> EmployeeList = new List<Employee>
         {
             new Employee { Id = 1, Name = "Sayan Saha", DateOfBirth = Convert.ToDateTime("1996-07-14"), Email = "sayansaha@gmail.com", DateOfJoining = DateTime.Today, Competency = "C2", Department = "IT" },
@@ -16,7 +17,9 @@ namespace EmployeeManagementSystem.Repositories
             new Employee { Id = 4, Name = "Steve Jobs", DateOfBirth = Convert.ToDateTime("1890-03-12"), Email = "stevejobs@rediff.com", DateOfJoining = DateTime.Today, Competency = "C1", Department = "Testing" },
             new Employee { Id = 5, Name = "Mukesh Ambani", DateOfBirth = Convert.ToDateTime("1965-10-29"), Email = "mukeshambani@gmail.com", DateOfJoining = DateTime.Today, Competency = "C2", Department = "Human Resources" }
         };
+        #endregion
 
+        #region Public Methods
         public Employee GetEmployeeById(int id)
         {
             var employee = (from e in EmployeeList
@@ -98,5 +101,6 @@ namespace EmployeeManagementSystem.Repositories
 
             return true;
         }
+        #endregion
     }
 }

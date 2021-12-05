@@ -1,14 +1,25 @@
-﻿using EmployeeManagementSystem.Common.Entities.Dtos;
-using EmployeeManagementSystem.Repositories;
+﻿using EmployeeManagementSystem.ApplicationServices.Interfaces;
+using EmployeeManagementSystem.Common.Entities.Dtos;
+using EmployeeManagementSystem.Repositories.Interfaces;
 using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace EmployeeManagementSystem.ApplicationServices
 {
-    public class EmployeeService
+    public class EmployeeService : IEmployeeService
     {
-        private EmployeeRepository _EmployeeRepo = new EmployeeRepository();
+        #region Private Variables
+        private IEmployeeRepository _EmployeeRepo;
+        #endregion
+
+        #region Constructors
+        public EmployeeService(IEmployeeRepository employeeRepo)
+        {
+            _EmployeeRepo = employeeRepo;
+        }
+        #endregion
+
+        #region Public Methods
         public Employee GetEmployeeById(int id)
         {
             if (id < 0)
@@ -56,5 +67,6 @@ namespace EmployeeManagementSystem.ApplicationServices
 
             return _EmployeeRepo.DeleteEmployee(id);
         }
+        #endregion
     }
 }
