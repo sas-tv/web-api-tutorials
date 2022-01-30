@@ -1,5 +1,6 @@
 using EmployeeManagementSystem.ApplicationServices;
 using EmployeeManagementSystem.ApplicationServices.Interfaces;
+using EmployeeManagementSystem.Common.Utilities;
 using EmployeeManagementSystem.Repositories;
 using EmployeeManagementSystem.Repositories.Interfaces;
 using Microsoft.AspNetCore.Builder;
@@ -7,6 +8,9 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
 
 namespace EmployeeManagementSystem
 {
@@ -21,12 +25,18 @@ namespace EmployeeManagementSystem
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
-        {
+        {   
             services.AddControllers();
 
-            //Dependency Injections
-            services.AddScoped<IEmployeeService, EmployeeService>();
-            services.AddScoped<IEmployeeRepository, EmployeeRepository>();
+            string[] assemblyNames =
+            {
+                "EmployeeManagementSystem",
+                "EmployeeManagementSystem.ApplicationServices",
+                "EmployeeManagementSystem.Common",
+                "EmployeeManagementSystem.Repositories",
+            };
+
+            services.RegisterClassOnMatchingNames(assemblyNames);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
