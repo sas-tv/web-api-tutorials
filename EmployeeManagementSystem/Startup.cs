@@ -1,9 +1,11 @@
 using EmployeeManagementSystem.ApplicationServices;
 using EmployeeManagementSystem.ApplicationServices.Interfaces;
 using EmployeeManagementSystem.Repositories;
+using EmployeeManagementSystem.Repositories.DatabaseContexts;
 using EmployeeManagementSystem.Repositories.Interfaces;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -23,6 +25,12 @@ namespace EmployeeManagementSystem
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
+
+            services.AddDbContext<EmsContext>(options =>
+            {
+                options.UseSqlServer(Configuration.GetConnectionString("EmsDatabase"));
+                options.UseLazyLoadingProxies(true);
+            });
 
             //Dependency Injections
             services.AddScoped<IEmployeeService, EmployeeService>();
