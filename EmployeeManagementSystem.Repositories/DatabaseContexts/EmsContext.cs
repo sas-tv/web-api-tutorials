@@ -27,7 +27,7 @@ namespace EmployeeManagementSystem.Repositories.DatabaseContexts
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            if(optionsBuilder.IsConfigured)
+            if(!optionsBuilder.IsConfigured)
             {
                 optionsBuilder.UseSqlServer("Server=localhost;Database=ems;Trusted_Connection=True;");
             }

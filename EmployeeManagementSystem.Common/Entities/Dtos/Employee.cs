@@ -11,6 +11,8 @@ namespace EmployeeManagementSystem.Common.Entities.Dtos
         public DateTime DateOfJoining { get; set; }
         public string Department { get; set; }
         public string Competency { get; set; }
+        public int CompetencyId { get; set; }
+        public int DepartmentId { get; set; }
     }
 
 }

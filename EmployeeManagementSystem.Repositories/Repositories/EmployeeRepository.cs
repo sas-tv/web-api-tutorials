@@ -1,36 +1,47 @@
 ﻿using EmployeeManagementSystem.Common.Entities.Dtos;
+using EmployeeManagementSystem.Repositories.DatabaseContexts;
 using EmployeeManagementSystem.Repositories.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using EmployeeDL = EmployeeManagementSystem.Repositories.Entities.Employee;
 
 namespace EmployeeManagementSystem.Repositories
 {
     public class EmployeeRepository : IEmployeeRepository
     {
         #region Private Variables
-        private List<Employee> EmployeeList = new List<Employee>
+        private readonly EmsContext context;
+        #endregion
+
+        #region Constructors
+        public EmployeeRepository(EmsContext emsContext)
         {
-            new Employee { Id = 1, Name = "Sayan Saha", DateOfBirth = Convert.ToDateTime("1996-07-14"), Email = "sayansaha@gmail.com", DateOfJoining = DateTime.Today, Competency = "C2", Department = "IT" },
-            new Employee { Id = 2, Name = "Elon Musk", DateOfBirth = Convert.ToDateTime("1957-01-07"), Email = "elonmusk@gmail.com", DateOfJoining = DateTime.Today, Competency = "C7", Department = "Human Resources" },
-            new Employee { Id = 3, Name = "Bill Gates", DateOfBirth = Convert.ToDateTime("1923-12-23"), Email = "billgates@gmail.com", DateOfJoining = DateTime.Today, Competency = "C4", Department = "Accounting and Finance" },
-            new Employee { Id = 4, Name = "Steve Jobs", DateOfBirth = Convert.ToDateTime("1890-03-12"), Email = "stevejobs@rediff.com", DateOfJoining = DateTime.Today, Competency = "C1", Department = "Testing" },
-            new Employee { Id = 5, Name = "Mukesh Ambani", DateOfBirth = Convert.ToDateTime("1965-10-29"), Email = "mukeshambani@gmail.com", DateOfJoining = DateTime.Today, Competency = "C2", Department = "Human Resources" }
-        };
+            context = emsContext;
+        }
         #endregion
 
         #region Public Methods
         public Employee GetEmployeeById(int id)
         {
-            var employee = (from e in EmployeeList
+            var employee = (from e in context.Employees
                             where e.Id == id
-                            select e).FirstOrDefault();
+                            select new Employee
+                            {
+                                Id = e.Id,
+                                Name = e.Name,
+                                DateOfBirth = e.DateOfBirth,
+                                DateOfJoining = e.DateOfJoining,
+                                Email = e.Email,
+                                Competency = e.Competency.Name,
+                                Department = e.Department.Name
+                            }).FirstOrDefault();
             return employee;
         }
 
         public List<EmployeeListDto> GetEmployees()
         {
-            var employeeList = (from e in EmployeeList
+            var employeeList = (from e in context.Employees
                                 select new EmployeeListDto
                                 {
                                     Id = e.Id,
@@ -42,36 +53,55 @@ namespace EmployeeManagementSystem.Repositories
 
         public Employee GetEmployeeByName(string name)
         {
-            var employee = (from e in EmployeeList
-                            where e.Name.Equals(name, StringComparison.OrdinalIgnoreCase)
-                            select e).FirstOrDefault();
+            var employee = (from e in context.Employees
+                            where e.Name.ToLower().Equals(name.ToLower())
+                            select new Employee
+                            {
+                                Id = e.Id,
+                                Name = e.Name,
+                                DateOfBirth = e.DateOfBirth,
+                                DateOfJoining = e.DateOfJoining,
+                                Email = e.Email,
+                                Competency = e.Competency.Name,
+                                Department = e.Department.Name,
+                                CompetencyId = e.Competency.Id,
+                                DepartmentId = e.Department.Id
+                            }).FirstOrDefault();
             return employee;
         }
 
-        public bool CreateEmployee(Employee employee)
+        public bool CreateEmployee(Employee e)
         {
-            var checkEmployeeExists = (from el in EmployeeList
-                                       where el.Name.Equals(employee.Name)
+            var checkEmployeeExists = (from el in context.Employees
+                                       where el.Email.Equals(e.Email)
                                        select el).Count();
 
             if (checkEmployeeExists > 0)
                 throw new Exception("Employee already exists!");
 
-            //Getting the latest employee id and incremeting it with 1
-            var maxEmployeeId = (from el in EmployeeList
-                                 orderby el.Id descending
-                                 select el.Id).FirstOrDefault();
-            employee.Id = maxEmployeeId + 1;
+            var newEmployee = new EmployeeDL
+            {
+                Id = e.Id,
+                Name = e.Name,
+                DateOfBirth = e.DateOfBirth,
+                DateOfJoining = e.DateOfJoining,
+                Email = e.Email,
+                CompetencyId = e.CompetencyId,
+                DepartmentId = e.DepartmentId,
+                CreatedOn = DateTime.Now,
+                UpdatedOn = DateTime.Now
+            };
 
             //Adding the employee in the list
-            EmployeeList.Add(employee);
+            context.Employees.Add(newEmployee);
+            context.SaveChanges();
 
             return true;
         }
 
         public bool UpdateEmployee(int id, Employee employee)
         {
-            var employeeToBeUpdated = (from el in EmployeeList
+            var employeeToBeUpdated = (from el in context.Employees
                                        where el.Id == id
                                        select el).FirstOrDefault();
 
@@ -79,25 +109,29 @@ namespace EmployeeManagementSystem.Repositories
                 throw new Exception($"Employee {id} doesn't exist");
 
             employeeToBeUpdated.Name = employee.Name;
-            employeeToBeUpdated.Competency = employee.Competency;
+            employeeToBeUpdated.CompetencyId = employee.CompetencyId;
             employeeToBeUpdated.DateOfBirth = employee.DateOfBirth;
             employeeToBeUpdated.DateOfJoining = employee.DateOfJoining;
-            employeeToBeUpdated.Department = employee.Department;
+            employeeToBeUpdated.DepartmentId = employee.DepartmentId;
             employeeToBeUpdated.Email = employee.Email;
+            employeeToBeUpdated.UpdatedOn = DateTime.Now;
+
+            context.SaveChanges();
 
             return true;
         }
 
         public bool DeleteEmployee(int id)
         {
-            var employeeToBeDeleted = (from el in EmployeeList
+            var employeeToBeDeleted = (from el in context.Employees
                                        where el.Id == id
                                        select el).FirstOrDefault();
 
             if (employeeToBeDeleted == null)
                 throw new Exception($"Employee {id} doesn't exist");
 
-            EmployeeList.Remove(employeeToBeDeleted);
+            context.Employees.Remove(employeeToBeDeleted);
+            context.SaveChanges();
 
             return true;
         }

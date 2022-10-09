@@ -20,6 +20,6 @@ namespace EmployeeManagementSystem.Repositories.Entities
         public DateTime? CreatedOn { get; set; }
         public DateTime? UpdatedOn { get; set; }
 
-        public ICollection<Employee> Employees { get; set; }
+        public virtual ICollection<Employee> Employees { get; set; }
     }
 }

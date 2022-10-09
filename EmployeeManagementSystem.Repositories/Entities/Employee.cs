@@ -22,7 +22,7 @@ namespace EmployeeManagementSystem.Repositories.Entities
         public DateTime? CreatedOn { get; set; }
         public DateTime? UpdatedOn { get; set; }
 
-        public Department Department { get; set; }
-        public Competency Competency { get; set; }
+        public virtual Department Department { get; set; }
+        public virtual Competency Competency { get; set; }
     }
 }
